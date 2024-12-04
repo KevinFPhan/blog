@@ -1,51 +1,97 @@
 ---
-interface Props {
-	title: string;
-}
+import { Image } from 'astro:assets';
+import { SEO } from 'astro-seo';
+import { type AstroBlogLayoutProps } from 'package-name';
+import { logos } from 'virtual:package-name/user-images';
+import 'package-name/styles-main';
+import '../styles/main.css';
 
-const { title } = Astro.props;
+
+const { title, description, seo, config } = Astro.props as AstroBlogLayoutProps;
+
+// const { title: siteName, logo: configLogo } = config;
+const siteName = config?.title || 'Default Site Name';
+const configLogo = config?.logo || null;
 ---
 
-<!doctype html>
+<script>
+	const prefersDarkMode =
+		window.matchMedia &&
+		window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+	if (prefersDarkMode) {
+		document.documentElement.classList.remove('light');
+		document.documentElement.classList.toggle('dark');
+	}
+</script>
+
 <html lang="en">
 	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
-		<meta name="viewport" content="width=device-width" />
+		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
+
+		<SEO {title} titleTemplate={`%s - ${siteName}`} {description}  {...seo} />
+
+		<slot name="head" />
 	</head>
-	<body>
-		<slot />
+	<body
+		class="bg-slate-100 dark:bg-gray-950 text-gray-950 dark:text-slate-100 min-h-[100vh]"
+	>
+		<h1 class="text-8xl">Astrssdo</h1>
+		<div class="min-h-[100svh] grid grid-rows-[auto_1fr]">
+			<div>
+				<div class="container mx-auto px-4 py-8 max-w-4xl">
+					<div class="left">
+						<a
+							href="/"
+							class="inline-block font-semibold hover:text-indigo-500 transition-colors"
+						>
+							{
+								logos.light && (
+									<Image
+										src={logos.light}
+										alt={configLogo?.alt || 'Logo'}
+										class="w-12 dark:hidden"
+									/>
+								)
+							}
+							{
+								logos.dark && (
+									<Image
+										src={logos.dark}
+										alt={configLogo?.alt || 'Logo'}
+										class="w-12 hidden dark:block"
+									/>
+								)
+							}
+							{
+								!logos.light && (
+									<span class="px-6 py-3 rounded-xl bg-[var(--primary)] text-slate-100 dark:text-gray-950">
+										Home
+									</span>
+								)
+							}
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="container mx-auto p-4 ">
+				asd
+				# WADDUP G
+				<slot />
+			</div>
+		</div>
 	</body>
 </html>
+
 <style is:global>
 	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
+		--primary: red;
 	}
-	html {
-		font-family: system-ui, sans-serif;
-		background: #13151a;
-		background-size: 224px;
-	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
+
+	html.dark {
+		--primary: pink;
 	}
 </style>
